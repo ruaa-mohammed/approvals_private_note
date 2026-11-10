@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+<t t-inherit="mail.Chatter" t-inherit-mode="extension">
+    <xpath expr="//button[hasclass('o-mail-Chatter-sendMessage')]" position="attributes">
+        <attribute name="t-att-class">{
+            'btn-primary': !['note', 'privateNote'].includes(state.composerType),
+            'btn-secondary': ['note', 'privateNote'].includes(state.composerType),
+            'active': state.composerType === 'message',
+            'my-2': !props.compactHeight
+        }</attribute>
+    </xpath>
+    <xpath expr="//button[hasclass('o-mail-Chatter-logNote')]" position="after">
+        <button t-if="props.hasMessageList and props.threadModel === 'approval.request'" class="o-mail-Chatter-privateNote btn text-nowrap me-1" t-att-class="{
+            'btn-primary active': state.composerType === 'privateNote',
+            'btn-secondary': state.composerType !== 'privateNote',
+            'my-2': !props.compactHeight
+        }" t-att-disabled="!state.thread.canPostMessage and props.threadId" t-on-click="() => this.toggleComposer('privateNote')">
+            Private Note
+        </button>
+    </xpath>
+    <!-- a private note is posted like a log note, text only and without the full composer -->
+    <xpath expr="//Composer" position="attributes">
+        <attribute name="type">state.composerType === 'privateNote' ? 'note' : state.composerType</attribute>
+        <attribute name="showFullComposer">state.composerType !== 'privateNote'</attribute>
+        <attribute name="allowUpload">state.composerType !== 'privateNote'</attribute>
+    </xpath>
+</t>
+
+</templates>

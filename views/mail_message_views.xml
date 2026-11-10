@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="mail_message_view_tree_private_note" model="ir.ui.view">
+        <field name="name">mail.message.tree.private.note</field>
+        <field name="model">mail.message</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <tree create="0" edit="0" delete="0">
+                <field name="date"/>
+                <field name="approval_request_id" string="Approval" widget="many2one_clickable"/>
+                <field name="author_id"/>
+                <field name="partner_ids" string="Mentioned" widget="many2many_tags"/>
+                <field name="preview" string="Note"/>
+                <field name="can_delete_private_note" column_invisible="True"/>
+                <button name="action_delete_private_note" type="object" icon="fa-trash"
+                        title="Delete" confirm="Delete this private note?"
+                        invisible="not can_delete_private_note"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="mail_message_view_form_private_note" model="ir.ui.view">
+        <field name="name">mail.message.form.private.note</field>
+        <field name="model">mail.message</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form create="0" edit="0" delete="0">
+                <header>
+                    <button name="action_delete_private_note" type="object" string="Delete"
+                            class="btn-danger" confirm="Delete this private note?"
+                            invisible="not can_delete_private_note"/>
+                </header>
+                <sheet>
+                    <field name="can_delete_private_note" invisible="1"/>
+                    <group>
+                        <group>
+                            <field name="approval_request_id" string="Approval" widget="many2one_clickable"/>
+                            <field name="author_id"/>
+                            <field name="date"/>
+                        </group>
+                        <group>
+                            <field name="partner_ids" string="Mentioned" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <field name="body"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_approval_private_note" model="ir.actions.act_window">
+        <field name="name">Private Notes</field>
+        <field name="res_model">mail.message</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('model', '=', 'approval.request'), ('is_private_note', '=', True)]</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('mail_message_view_tree_private_note')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('mail_message_view_form_private_note')})]"/>
+    </record>
+
+    <menuitem
+        id="approvals_menu_private_note"
+        parent="approvals.approvals_menu_root"
+        name="Private Notes"
+        action="action_approval_private_note"
+        sequence="30"/>
+
+</odoo>
